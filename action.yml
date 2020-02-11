@@ -1,5 +1,6 @@
 name: 'Setup smalltalkCI'
-description: 'Set up smalltalkCI for testing Smalltalk projects'
+description: 'Set up smalltalkCI for testing Squeak/Smalltalk, Pharo, GemStone,
+  and Moose projects'
 author: 'Software Architecture Group, Hasso Plattner Institute'
 inputs:
   smalltalk-version:
