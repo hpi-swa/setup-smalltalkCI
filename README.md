@@ -24,7 +24,7 @@ jobs:
   build:
     strategy:
       matrix:
-        smalltalk: [ Squeak64-trunk, Pharo64-stable, GemStone64-3.3.2 ]
+        smalltalk: [ Squeak64-trunk, Pharo64-stable ]
     name: ${{ matrix.smalltalk }}
     steps:
       - uses: actions/checkout@v2
