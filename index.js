@@ -57,13 +57,13 @@ async function run() {
 }
 
 async function install64bitDependencies(deps) {
-  await exec.exec(`sudo apt-get install -y --no-install-recommends ${deps}`)
+  await exec.exec(`sudo apt-get install -qq --no-install-recommends ${deps}`)
 }
 
 async function install32bitDependencies(deps) {
   await exec.exec('sudo dpkg --add-architecture i386')
   await exec.exec('sudo apt-get update')
-  await exec.exec(`sudo apt-get install -y --no-install-recommends ${deps}`)
+  await exec.exec(`sudo apt-get install -qq --no-install-recommends ${deps}`)
 }
 
 function isLinux() {
