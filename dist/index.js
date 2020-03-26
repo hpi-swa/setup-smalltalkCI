@@ -961,6 +961,7 @@ const tc = __webpack_require__(533)
 
 const SCI_BRANCH = 'master'
 const INSTALLATION_DIRECTORY = path.join(os.homedir(), '.smalltalkCI')
+const DEFAULT_64BIT_DEPS = 'libpulse0'
 const DEFAULT_32BIT_DEPS = 'libc6-i386 libuuid1:i386 libssl1.0.0:i386'
 const PHARO_32BIT_DEPS = `${DEFAULT_32BIT_DEPS} libcairo2:i386`
 
@@ -984,13 +985,19 @@ async function run() {
     await io.mv(path.join(tempDir, `smalltalkCI-${SCI_BRANCH}`), INSTALLATION_DIRECTORY)
 
     /* Install dependencies if any. */
-    if (isLinux() && !is64bit(version)) {
-      if (isSqueak(version) || isEtoys(version)) {
-        await install32bitDependencies(DEFAULT_32BIT_DEPS)
-      } else if (isPharo(version) || isMoose(version)) {
-        await install32bitDependencies(PHARO_32BIT_DEPS)
-      } else if (isGemstone(version)) {
-        // TODO
+    if (isLinux()) {
+      if (is64bit(version)) {
+        if (isSqueak(version) || isEtoys(version)) {
+          install64bitDependencies(DEFAULT_64BIT_DEPS)
+        }
+      } else {
+        if (isSqueak(version) || isEtoys(version)) {
+          await install32bitDependencies(DEFAULT_32BIT_DEPS)
+        } else if (isPharo(version) || isMoose(version)) {
+          await install32bitDependencies(PHARO_32BIT_DEPS)
+        } else if (isGemstone(version)) {
+          // TODO
+        }
       }
     }
 
@@ -1000,6 +1007,10 @@ async function run() {
   catch (error) {
     core.setFailed(error.message)
   }
+}
+
+async function install64bitDependencies(deps) {
+  await exec.exec(`sudo apt-get install -y --no-install-recommends ${deps}`)
 }
 
 async function install32bitDependencies(deps) {
