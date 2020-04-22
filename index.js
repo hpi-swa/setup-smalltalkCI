@@ -57,6 +57,7 @@ async function run() {
 }
 
 async function install64bitDependencies(deps) {
+  await exec.exec('sudo apt-get update')
   await exec.exec(`sudo apt-get install -qq --no-install-recommends ${deps}`)
 }
 
