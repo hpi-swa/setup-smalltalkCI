@@ -14,7 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: hpi-swa/setup-smalltalkCI@v1
-      id: smalltalkci
-      with:
-        smalltalk-version: 'Squeak64-trunk'
-    - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }} --self-test
+    - run: smalltalkci --help
