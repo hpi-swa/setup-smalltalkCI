@@ -17,4 +17,4 @@ jobs:
       id: smalltalkci
       with:
         smalltalk-version: 'Squeak64-trunk'
-      run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }} --self-test
+    - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }} --self-test
