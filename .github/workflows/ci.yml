@@ -2,17 +2,19 @@ name: "CI"
 on: [push, pull_request]
 
 jobs:
-  units:
+  npm:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - run: npm ci
     - run: npm test
 
-  test:
+  self-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: ./
+    - uses: hpi-swa/setup-smalltalkCI@v1
+      id: smalltalkci
       with:
         smalltalk-version: 'Squeak64-trunk'
+      run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }} --self-test
