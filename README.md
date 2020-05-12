@@ -45,7 +45,7 @@ steps:
     with:
       smalltalk-version: 'Squeak64-trunk'
       smalltalkCI-branch: 'testing-branch'
-      smalltalkCI-source: 'https://github.com/myfork/smalltalkCI'
+      smalltalkCI-source: 'myfork/smalltalkCI'
   - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }}
     timeout-minutes: 15
 ```

@@ -10,7 +10,7 @@ inputs:
   smalltalkCI-source:
     description: 'Smalltalk CI source repo'
     required: false
-    default: 'https://github.com/hpi-swa/smalltalkCI'
+    default: 'hpi-swa/smalltalkCI'
   smalltalkCI-branch:
     description: 'Branch or tag to use from Smalltalk CI repo'
     required: false
