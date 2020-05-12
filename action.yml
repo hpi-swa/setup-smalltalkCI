@@ -8,11 +8,11 @@ inputs:
       supported images)'
     required: true
   smalltalkCI-source:
-    description: 'Smalltalk CI source repo'
+    description: 'GitHub slug of the smalltalkCI source repository'
     required: false
     default: 'hpi-swa/smalltalkCI'
   smalltalkCI-branch:
-    description: 'Branch or tag to use from Smalltalk CI repo'
+    description: 'Branch or tag to use from smalltalkCI repository'
     required: false
     default: 'master'
 outputs:
