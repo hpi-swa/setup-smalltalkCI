@@ -6,7 +6,6 @@ const exec = require('@actions/exec')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
 
-const SCI_BRANCH = 'master'
 const INSTALLATION_DIRECTORY = path.join(os.homedir(), '.smalltalkCI')
 const DEFAULT_64BIT_DEPS = 'libpulse0'
 const DEFAULT_32BIT_DEPS = 'libc6-i386 libuuid1:i386 libssl1.0.0:i386'
@@ -15,6 +14,8 @@ const PHARO_32BIT_DEPS = `${DEFAULT_32BIT_DEPS} libcairo2:i386`
 
 async function run() {
   try {
+    const SCI_BRANCH = core.getInput('smalltalkCI-branch') || 'master'
+    const SCI_REPO_URL = core.getInput('smalltalkCI-source') || 'https://github.com/hpi-swa/smalltalkCI'
     const version = core.getInput('smalltalk-version', { required: true })
     core.setOutput('smalltalk-version', version)
 
@@ -22,11 +23,11 @@ async function run() {
     console.log('Downloading and extracting smalltalkCI...')
     let tempDir = path.join(os.homedir(), '.smalltalkCI-temp')
     if (isWindows()) {
-      const toolPath = await tc.downloadTool(`https://github.com/hpi-swa/smalltalkCI/archive/${SCI_BRANCH}.zip`)
+      const toolPath = await tc.downloadTool(`${SCI_REPO_URL}/archive/${SCI_BRANCH}.zip`)
       tempDir = await tc.extractZip(toolPath, tempDir)
     }
     else {
-      const toolPath = await tc.downloadTool(`https://github.com/hpi-swa/smalltalkCI/archive/${SCI_BRANCH}.tar.gz`)
+      const toolPath = await tc.downloadTool(`${SCI_REPO_URL}/archive/${SCI_BRANCH}.tar.gz`)
       tempDir = await tc.extractTar(toolPath, tempDir)
     }
     await io.mv(path.join(tempDir, `smalltalkCI-${SCI_BRANCH}`), INSTALLATION_DIRECTORY)
@@ -50,7 +51,7 @@ async function run() {
 
     /* Set up smalltalkci command. */
     core.addPath(path.join(INSTALLATION_DIRECTORY, 'bin'))
-  } 
+  }
   catch (error) {
     core.setFailed(error.message)
   }

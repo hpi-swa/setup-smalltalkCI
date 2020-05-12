@@ -7,6 +7,14 @@ inputs:
     description: 'Smalltalk image selection (see smalltalkCI''s list of
       supported images)'
     required: true
+  smalltalkCI-source:
+    description: 'Smalltalk CI source repo'
+    required: false
+    default: 'https://github.com/hpi-swa/smalltalkCI'
+  smalltalkCI-branch:
+    description: 'Branch or tag to use from Smalltalk CI repo'
+    required: false
+    default: 'master'
 outputs:
   smalltalk-version:
     description: 'Smalltalk image selection'

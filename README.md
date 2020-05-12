@@ -35,4 +35,19 @@ jobs:
         timeout-minutes: 15
 ```
 
+### Use a different branch or fork
+
+```yaml
+steps:
+  - uses: actions/checkout@v2
+  - uses: hpi-swa/setup-smalltalkCI@v1
+    id: smalltalkci
+    with:
+      smalltalk-version: 'Squeak64-trunk'
+      smalltalkCI-branch: 'testing-branch'
+      smalltalkCI-source: 'https://github.com/myfork/smalltalkCI'
+  - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }}
+    timeout-minutes: 15
+```
+
 [smalltalkCI]: https://github.com/hpi-swa/smalltalkCI
