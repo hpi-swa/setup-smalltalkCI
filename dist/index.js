@@ -972,8 +972,9 @@ const exec = __webpack_require__(986)
 const io = __webpack_require__(1)
 const tc = __webpack_require__(533)
 
-const SCI_BRANCH = 'master'
 const INSTALLATION_DIRECTORY = path.join(os.homedir(), '.smalltalkCI')
+const DEFAULT_BRANCH = 'master'
+const DEFAULT_SOURCE = 'hpi-swa/smalltalkCI'
 const DEFAULT_64BIT_DEPS = 'libpulse0'
 const DEFAULT_32BIT_DEPS = 'libc6-i386 libuuid1:i386 libssl1.0.0:i386'
 const PHARO_32BIT_DEPS = `${DEFAULT_32BIT_DEPS} libcairo2:i386`
@@ -983,19 +984,21 @@ async function run() {
   try {
     const version = core.getInput('smalltalk-version', { required: true })
     core.setOutput('smalltalk-version', version)
+    const smalltalkCIBranch = core.getInput('smalltalkCI-branch') || DEFAULT_BRANCH
+    const smalltalkCISource = core.getInput('smalltalkCI-source') || DEFAULT_SOURCE
 
     /* Download and extract smalltalkCI. */
     console.log('Downloading and extracting smalltalkCI...')
     let tempDir = path.join(os.homedir(), '.smalltalkCI-temp')
     if (isWindows()) {
-      const toolPath = await tc.downloadTool(`https://github.com/hpi-swa/smalltalkCI/archive/${SCI_BRANCH}.zip`)
+      const toolPath = await tc.downloadTool(`https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.zip`)
       tempDir = await tc.extractZip(toolPath, tempDir)
     }
     else {
-      const toolPath = await tc.downloadTool(`https://github.com/hpi-swa/smalltalkCI/archive/${SCI_BRANCH}.tar.gz`)
+      const toolPath = await tc.downloadTool(`https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.tar.gz`)
       tempDir = await tc.extractTar(toolPath, tempDir)
     }
-    await io.mv(path.join(tempDir, `smalltalkCI-${SCI_BRANCH}`), INSTALLATION_DIRECTORY)
+    await io.mv(path.join(tempDir, `smalltalkCI-${smalltalkCIBranch}`), INSTALLATION_DIRECTORY)
 
     /* Install dependencies if any. */
     if (isLinux()) {
@@ -1016,7 +1019,7 @@ async function run() {
 
     /* Set up smalltalkci command. */
     core.addPath(path.join(INSTALLATION_DIRECTORY, 'bin'))
-  } 
+  }
   catch (error) {
     core.setFailed(error.message)
   }
