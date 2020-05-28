@@ -14,6 +14,7 @@ steps:
     with:
       smalltalk-version: 'Squeak64-trunk'
   - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }}
+    shell: bash
     timeout-minutes: 15
 ```
 
@@ -32,6 +33,7 @@ jobs:
         with:
           smalltalk-version: ${{ matrix.smalltalk }}
       - run: smalltalkci -s ${{ matrix.smalltalk }}
+        shell: bash
         timeout-minutes: 15
 ```
 
@@ -47,6 +49,7 @@ steps:
       smalltalkCI-branch: 'testing-branch'
       smalltalkCI-source: 'myfork/smalltalkCI'
   - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }}
+    shell: bash
     timeout-minutes: 15
 ```
 
