@@ -46,7 +46,7 @@ async function run() {
         } else if (isPharo(version) || isMoose(version)) {
           await install32bitDependencies(PHARO_32BIT_DEPS)
         } else if (isGemstone(version)) {
-          // TODO
+          // nothing to, smalltalkCI will set up the system using GsDevKit_home
         }
       }
     }
