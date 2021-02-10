@@ -1139,6 +1139,7 @@ exports.issueCommand = issueCommand;
 /***/ 104:
 /***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
+const fs = __webpack_require__(747)
 const os = __webpack_require__(87)
 const path = __webpack_require__(622)
 
@@ -1151,8 +1152,9 @@ const INSTALLATION_DIRECTORY = path.join(os.homedir(), '.smalltalkCI')
 const DEFAULT_BRANCH = 'master'
 const DEFAULT_SOURCE = 'hpi-swa/smalltalkCI'
 const DEFAULT_64BIT_DEPS = 'libpulse0'
-const DEFAULT_32BIT_DEPS = 'libc6-i386 libuuid1:i386 libssl1.0.0:i386'
+const DEFAULT_32BIT_DEPS = 'libc6-i386 libuuid1:i386' + (isUbuntu20() ? 'libssl1.1:i386' : 'libssl1.0.0:i386')
 const PHARO_32BIT_DEPS = `${DEFAULT_32BIT_DEPS} libcairo2:i386`
+const LSB_FILE = '/etc/lsb-release'
 
 
 async function run() {
@@ -1187,7 +1189,7 @@ async function run() {
         } else if (isPharo(version) || isMoose(version)) {
           await install32bitDependencies(PHARO_32BIT_DEPS)
         } else if (isGemstone(version)) {
-          // TODO
+          // nothing to, smalltalkCI will set up the system using GsDevKit_home
         }
       }
     }
@@ -1213,6 +1215,14 @@ async function install32bitDependencies(deps) {
 
 function isLinux() {
   return process.platform === 'linux'
+}
+
+function isUbuntu20() {
+  if (isLinux() && fs.existsSync(LSB_FILE)) {
+    return fs.readFileSync(LSB_FILE).toString().includes("DISTRIB_RELEASE=20")
+  } else {
+    return false;
+  }
 }
 
 function isWindows() {
