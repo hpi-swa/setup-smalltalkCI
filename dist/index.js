@@ -1151,10 +1151,10 @@ const tc = __webpack_require__(533)
 const INSTALLATION_DIRECTORY = path.join(os.homedir(), '.smalltalkCI')
 const DEFAULT_BRANCH = 'master'
 const DEFAULT_SOURCE = 'hpi-swa/smalltalkCI'
+const LSB_FILE = '/etc/lsb-release'
 const DEFAULT_64BIT_DEPS = 'libpulse0'
 const DEFAULT_32BIT_DEPS = 'libc6-i386 libuuid1:i386' + (isUbuntu20() ? 'libssl1.1:i386' : 'libssl1.0.0:i386')
 const PHARO_32BIT_DEPS = `${DEFAULT_32BIT_DEPS} libcairo2:i386`
-const LSB_FILE = '/etc/lsb-release'
 
 
 async function run() {
