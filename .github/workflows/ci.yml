@@ -16,4 +16,6 @@ jobs:
     - uses: hpi-swa/setup-smalltalkCI@v1
       with:
         smalltalk-version: 'Squeak64-trunk'
-    - run: smalltalkci --help
+    - run: |
+        smalltalkci --help
+        [[ ! -z "${SMALLTALK_CI_HOME}" ]] || false

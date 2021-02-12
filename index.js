@@ -1,3 +1,4 @@
+const child_process = require('child_process');
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -53,6 +54,17 @@ async function run() {
       }
     }
 
+    /* Find and export smalltalkCI's env vars. */
+    const envVarsPath = path.join(INSTALLATION_DIRECTORY, 'env_vars')
+    const envCommand = `bash -c "source ${envVarsPath} && env | grep SMALLTALK_CI_"`
+    const envList = child_process.execSync(envCommand).toString();
+    for (const envItem of envList.split('\n')) {
+      const parts = envItem.split('=')
+      if (parts.length == 2) {
+        core.exportVariable(parts[0], parts[1])
+      }
+    }
+
     /* Set up smalltalkci command. */
     core.addPath(path.join(INSTALLATION_DIRECTORY, 'bin'))
   }
@@ -80,7 +92,7 @@ function isUbuntu20() {
   if (isLinux() && fs.existsSync(LSB_FILE)) {
     return fs.readFileSync(LSB_FILE).toString().includes("DISTRIB_RELEASE=20")
   } else {
-    return false;
+    return false
   }
 }
 
