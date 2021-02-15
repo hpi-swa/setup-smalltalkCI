@@ -54,19 +54,17 @@ async function run() {
       }
     }
 
+    /* Set up smalltalkci command. */
+    core.addPath(path.join(INSTALLATION_DIRECTORY, 'bin'))
+
     /* Find and export smalltalkCI's env vars. */
-    const envVarsPath = path.join(INSTALLATION_DIRECTORY, 'env_vars')
-    const envCommand = `bash -c "source ${envVarsPath} && env | grep SMALLTALK_CI_"`
-    const envList = child_process.execSync(envCommand).toString();
+    const envList = child_process.execSync('smalltalkci --print-env').toString()
     for (const envItem of envList.split('\n')) {
       const parts = envItem.split('=')
       if (parts.length == 2) {
         core.exportVariable(parts[0], parts[1])
       }
     }
-
-    /* Set up smalltalkci command. */
-    core.addPath(path.join(INSTALLATION_DIRECTORY, 'bin'))
   }
   catch (error) {
     core.setFailed(error.message)
