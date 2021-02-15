@@ -59,7 +59,7 @@ async function run() {
 
     /* Find and export smalltalkCI's env vars. */
     await exec.exec('smalltalkci', ['--print-env'], { outStream: fs.createWriteStream(SCI_ENV_FILE) })
-    const envList = fs.readFileSync(SCI_ENV_FILE, 'utf8')
+    const envList = await fs.readFileSync(SCI_ENV_FILE, 'utf8')
     for (const envItem of envList.split('\n')) {
       const parts = envItem.split('=')
       if (parts.length == 2) {
