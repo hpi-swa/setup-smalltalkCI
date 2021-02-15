@@ -1139,7 +1139,6 @@ exports.issueCommand = issueCommand;
 /***/ 104:
 /***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
-const child_process = __webpack_require__(129);
 const fs = __webpack_require__(747)
 const os = __webpack_require__(87)
 const path = __webpack_require__(622)
@@ -1150,6 +1149,7 @@ const io = __webpack_require__(1)
 const tc = __webpack_require__(533)
 
 const INSTALLATION_DIRECTORY = path.join(os.homedir(), '.smalltalkCI')
+const SCI_ENV_FILE = path.join(os.homedir(), '.smalltalkCI-env')
 const DEFAULT_BRANCH = 'master'
 const DEFAULT_SOURCE = 'hpi-swa/smalltalkCI'
 const LSB_FILE = '/etc/lsb-release'
@@ -1199,7 +1199,8 @@ async function run() {
     core.addPath(path.join(INSTALLATION_DIRECTORY, 'bin'))
 
     /* Find and export smalltalkCI's env vars. */
-    const envList = child_process.execSync('smalltalkci --print-env').toString()
+    await exec.exec('smalltalkci', ['--print-env'], { outStream: fs.createWriteStream(SCI_ENV_FILE) })
+    const envList = fs.readFileSync(SCI_ENV_FILE, 'utf8')
     for (const envItem of envList.split('\n')) {
       const parts = envItem.split('=')
       if (parts.length == 2) {
