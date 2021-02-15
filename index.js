@@ -1,3 +1,4 @@
+const child_process = require('child_process');
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -7,8 +8,10 @@ const exec = require('@actions/exec')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
 
+const IS_LINUX = process.platform === 'linux'
+const IS_WINDOWS = process.platform === 'win32'
+
 const INSTALLATION_DIRECTORY = path.join(os.homedir(), '.smalltalkCI')
-const SCI_ENV_FILE = path.join(os.homedir(), '.smalltalkCI-env')
 const DEFAULT_BRANCH = 'master'
 const DEFAULT_SOURCE = 'hpi-swa/smalltalkCI'
 const LSB_FILE = '/etc/lsb-release'
@@ -27,7 +30,7 @@ async function run() {
     /* Download and extract smalltalkCI. */
     console.log('Downloading and extracting smalltalkCI...')
     let tempDir = path.join(os.homedir(), '.smalltalkCI-temp')
-    if (isWindows()) {
+    if (IS_WINDOWS) {
       const toolPath = await tc.downloadTool(`https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.zip`)
       tempDir = await tc.extractZip(toolPath, tempDir)
     }
@@ -38,7 +41,7 @@ async function run() {
     await io.mv(path.join(tempDir, `smalltalkCI-${smalltalkCIBranch}`), INSTALLATION_DIRECTORY)
 
     /* Install dependencies if any. */
-    if (isLinux()) {
+    if (IS_LINUX) {
       if (is64bit(version)) {
         if (isSqueak(version) || isEtoys(version)) {
           install64bitDependencies(DEFAULT_64BIT_DEPS)
@@ -57,13 +60,14 @@ async function run() {
     /* Set up smalltalkci command. */
     core.addPath(path.join(INSTALLATION_DIRECTORY, 'bin'))
 
-    /* Find and export smalltalkCI's env vars. */
-    await exec.exec('smalltalkci', ['--print-env'], { outStream: fs.createWriteStream(SCI_ENV_FILE) })
-    const envList = await fs.readFileSync(SCI_ENV_FILE, 'utf8')
-    for (const envItem of envList.split('\n')) {
-      const parts = envItem.split('=')
-      if (parts.length == 2) {
-        core.exportVariable(parts[0], parts[1])
+    if (!IS_WINDOWS) {
+      /* Find and export smalltalkCI's env vars. */
+      const envList = child_process.execSync('smalltalkci --print-env').toString()
+      for (const envItem of envList.split('\n')) {
+        const parts = envItem.split('=')
+        if (parts.length == 2) {
+          core.exportVariable(parts[0], parts[1])
+        }
       }
     }
   }
@@ -83,20 +87,12 @@ async function install32bitDependencies(deps) {
   await exec.exec(`sudo apt-get install -qq --no-install-recommends ${deps}`)
 }
 
-function isLinux() {
-  return process.platform === 'linux'
-}
-
 function isUbuntu20() {
-  if (isLinux() && fs.existsSync(LSB_FILE)) {
+  if (IS_LINUX && fs.existsSync(LSB_FILE)) {
     return fs.readFileSync(LSB_FILE).toString().includes("DISTRIB_RELEASE=20")
   } else {
     return false
   }
-}
-
-function isWindows() {
-  return process.platform === 'win32'
 }
 
 function is64bit(version) {

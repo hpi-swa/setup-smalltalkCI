@@ -19,7 +19,10 @@ jobs:
     - uses: hpi-swa/setup-smalltalkCI@v1
       with:
         smalltalk-version: 'Squeak64-trunk'
-    - shell: bash
+    - if: runner.os != 'Windows'
       run: |
         smalltalkci --help
-        [[ ! -z "${SMALLTALK_CI_HOME}" ]] || false
+        [[ ! -z "${SMALLTALK_CI_HOME}" ]] || ( echo "SMALLTALK_CI_HOME not set" && false )
+    - shell: bash
+      if: runner.os == 'Windows'
+      run: smalltalkci --help
