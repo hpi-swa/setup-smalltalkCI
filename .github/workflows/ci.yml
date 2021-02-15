@@ -10,12 +10,16 @@ jobs:
     - run: npm test
 
   self-test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
     steps:
     - uses: actions/checkout@v1
     - uses: hpi-swa/setup-smalltalkCI@v1
       with:
         smalltalk-version: 'Squeak64-trunk'
-    - run: |
+    - shell: bash
+      run: |
         smalltalkci --help
         [[ ! -z "${SMALLTALK_CI_HOME}" ]] || false
