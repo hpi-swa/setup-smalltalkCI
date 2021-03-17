@@ -3,10 +3,11 @@ description: 'Set up smalltalkCI for testing Squeak/Smalltalk, Pharo, GemStone,
   and Moose projects'
 author: 'Software Architecture Group, Hasso Plattner Institute'
 inputs:
-  smalltalk-version:
+  smalltalk-image:
     description: 'Smalltalk image selection (see smalltalkCI''s list of
       supported images)'
-    required: true
+  smalltalk-version:
+    description: 'Deprecated, please use smalltalk-image'
   smalltalkCI-source:
     description: 'GitHub slug of the smalltalkCI source repository'
     required: false
@@ -16,8 +17,10 @@ inputs:
     required: false
     default: 'master'
 outputs:
-  smalltalk-version:
+  smalltalk-image:
     description: 'Smalltalk image selection'
+  smalltalk-version:
+    description: 'Deprecated, please use smalltalk-image'
 runs:
   using: 'node12'
   main: 'dist/index.js'

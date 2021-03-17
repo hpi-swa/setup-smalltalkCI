@@ -12,8 +12,8 @@ steps:
   - uses: hpi-swa/setup-smalltalkCI@v1
     id: smalltalkci
     with:
-      smalltalk-version: 'Squeak64-trunk'
-  - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }}
+      smalltalk-image: 'Squeak64-trunk'
+  - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
     shell: bash
     timeout-minutes: 15
 ```
@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: hpi-swa/setup-smalltalkCI@v1
         with:
-          smalltalk-version: ${{ matrix.smalltalk }}
+          smalltalk-image: ${{ matrix.smalltalk }}
       - run: smalltalkci -s ${{ matrix.smalltalk }}
         shell: bash
         timeout-minutes: 15
@@ -45,10 +45,10 @@ steps:
   - uses: hpi-swa/setup-smalltalkCI@v1
     id: smalltalkci
     with:
-      smalltalk-version: 'Squeak64-trunk'
+      smalltalk-image: 'Squeak64-trunk'
       smalltalkCI-branch: 'testing-branch'
       smalltalkCI-source: 'myfork/smalltalkCI'
-  - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-version }}
+  - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
     shell: bash
     timeout-minutes: 15
 ```

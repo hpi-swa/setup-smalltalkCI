@@ -1,4 +1,4 @@
-const child_process = require('child_process');
+const child_process = require('child_process')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -22,8 +22,29 @@ const PHARO_32BIT_DEPS = `${DEFAULT_32BIT_DEPS} libcairo2:i386`
 
 async function run() {
   try {
-    const version = core.getInput('smalltalk-version', { required: true })
+    let image
+    const version = core.getInput('smalltalk-version')
+    if (version.length > 0) {
+      image = version
+      core.warning('Please use "smalltalk-image". "smalltalk-version" is deprecated and will be removed in the future.')
+    } else {
+      image = core.getInput('smalltalk-image', { required: true })
+    }
+
+    const is64bit = /^[a-zA-Z]*64-/.test(image)
+    const isSqueak = isPlatform(image, 'squeak')
+    const isEtoys = isPlatform(image, 'etoys')
+    const isPharo = isPlatform(image, 'pharo')
+    const isMoose = isPlatform(image, 'moose')
+    const isGemstone = isPlatform(image, 'gemstone')
+
+    if (!isSqueak && !isEtoys && !isPharo && !isMoose && !isGemstone) {
+      return core.setFailed(`Unsupported Smalltalk version "${image}".`)
+    }
+
+    core.setOutput('smalltalk-image', image)
     core.setOutput('smalltalk-version', version)
+
     const smalltalkCIBranch = core.getInput('smalltalkCI-branch') || DEFAULT_BRANCH
     const smalltalkCISource = core.getInput('smalltalkCI-source') || DEFAULT_SOURCE
 
@@ -33,8 +54,7 @@ async function run() {
     if (IS_WINDOWS) {
       const toolPath = await tc.downloadTool(`https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.zip`)
       tempDir = await tc.extractZip(toolPath, tempDir)
-    }
-    else {
+    } else {
       const toolPath = await tc.downloadTool(`https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.tar.gz`)
       tempDir = await tc.extractTar(toolPath, tempDir)
     }
@@ -42,16 +62,16 @@ async function run() {
 
     /* Install dependencies if any. */
     if (IS_LINUX) {
-      if (is64bit(version)) {
-        if (isSqueak(version) || isEtoys(version)) {
+      if (is64bit) {
+        if (isSqueak || isEtoys) {
           install64bitDependencies(DEFAULT_64BIT_DEPS)
         }
       } else {
-        if (isSqueak(version) || isEtoys(version)) {
+        if (isSqueak || isEtoys) {
           await install32bitDependencies(DEFAULT_32BIT_DEPS)
-        } else if (isPharo(version) || isMoose(version)) {
+        } else if (isPharo || isMoose) {
           await install32bitDependencies(PHARO_32BIT_DEPS)
-        } else if (isGemstone(version)) {
+        } else if (isGemstone) {
           // nothing to, smalltalkCI will set up the system using GsDevKit_home
         }
       }
@@ -70,8 +90,7 @@ async function run() {
         }
       }
     }
-  }
-  catch (error) {
+  } catch (error) {
     core.setFailed(error.message)
   }
 }
@@ -89,38 +108,14 @@ async function install32bitDependencies(deps) {
 
 function isUbuntu20() {
   if (IS_LINUX && fs.existsSync(LSB_FILE)) {
-    return fs.readFileSync(LSB_FILE).toString().includes("DISTRIB_RELEASE=20")
+    return fs.readFileSync(LSB_FILE).toString().includes('DISTRIB_RELEASE=20')
   } else {
     return false
   }
 }
 
-function is64bit(version) {
-  return /^[a-zA-Z]*64-/.test(version)
-}
-
-function isSqueak(version) {
-  return isPlatform(version, 'squeak')
-}
-
-function isEtoys(version) {
-  return isPlatform(version, 'etoys')
-}
-
-function isPharo(version) {
-  return isPlatform(version, 'pharo')
-}
-
-function isMoose(version) {
-  return isPlatform(version, 'moose')
-}
-
-function isGemstone(version) {
-  return isPlatform(version, 'gemstone')
-}
-
-function isPlatform(version, name) {
-  return version.toLowerCase().startsWith(name)
+function isPlatform(image, name) {
+  return image.toLowerCase().startsWith(name)
 }
 
 run()
