@@ -71,7 +71,7 @@ async function run() {
     if (IS_LINUX) {
       if (is64bit) {
         if (isSqueak || isEtoys) {
-          install64bitDependencies(DEFAULT_64BIT_DEPS)
+          await install64bitDependencies(DEFAULT_64BIT_DEPS)
         }
       } else {
         if (isSqueak || isEtoys) {
