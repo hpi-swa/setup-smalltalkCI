@@ -1,0 +1,12 @@
+env:
+  commonjs: true
+  es2021: true
+  node: true
+plugins:
+  - no-floating-promise
+extends: 'eslint:recommended'
+parserOptions:
+  ecmaVersion: 12
+rules:
+  require-await: error
+  no-floating-promise/no-floating-promise: error

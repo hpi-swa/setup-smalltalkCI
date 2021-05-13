@@ -118,4 +118,5 @@ function isPlatform(image, name) {
   return image.toLowerCase().startsWith(name)
 }
 
-run()
+// eslint-disable-next-line no-floating-promise/no-floating-promise
+run()  // return a Promise as specified by the GitHub Actions protocol
