@@ -16,6 +16,9 @@ inputs:
     description: 'Branch or tag to use from smalltalkCI repository'
     required: false
     default: 'master'
+  smalltalkCI-workspace:
+    description: 'Path to install smalltalkCI to'
+    required: false
 outputs:
   smalltalk-image:
     description: 'Smalltalk image selection'
