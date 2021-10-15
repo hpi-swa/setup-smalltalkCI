@@ -18,7 +18,7 @@ steps:
     timeout-minutes: 15
 ```
 
-### Matrix Testing
+### Testing Different Smalltalk Images
 
 ```yaml
 jobs:
@@ -33,6 +33,25 @@ jobs:
         with:
           smalltalk-image: ${{ matrix.smalltalk }}
       - run: smalltalkci -s ${{ matrix.smalltalk }}
+        shell: bash
+        timeout-minutes: 15
+```
+
+### Testing Different Smalltalk Images with Different Configurations
+```yaml
+jobs:
+  build:
+    strategy:
+      matrix:
+        smalltalk: [ Squeak64-trunk, Pharo64-stable ]
+        smalltalk_config: [ .smalltalkA.ston, .smalltalkB.ston ]
+    name: ${{ matrix.smalltalk }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hpi-swa/setup-smalltalkCI@v1
+        with:
+          smalltalk-image: ${{ matrix.smalltalk }}
+      - run: smalltalkci -s ${{ matrix.smalltalk }} ${{ matrix.smalltalk_config }}
         shell: bash
         timeout-minutes: 15
 ```
