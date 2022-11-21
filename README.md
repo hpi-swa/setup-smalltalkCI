@@ -72,4 +72,34 @@ steps:
     timeout-minutes: 15
 ```
 
+
+### (Pharo Specific) Use Iceberg features in Github Action 
+
+Using Iceberg in github action allows developers to access the directory of a repository regardless of where it is located in the file system.  
+This ease access to non-smalltalk resources.  
+
+```smalltalk
+(IceRepository registeredRepositoryIncludingPackage: self class package) location pathString
+```
+
+Iceberg requires the full commit history.  
+actions/checkout provides by default only the latest one.  
+Therefore we need to use an option to get all commits.  
+(Only available for Pharo 9 and later version at this time). 
+
+```yaml
+steps:
+  - uses: actions/checkout@v2
+    with:
+      fetch-depth: 0 #Option fetching all commits
+  - uses: hpi-swa/setup-smalltalkCI@v1
+    id: smalltalkci
+    with:
+      smalltalk-image: 'Squeak64-trunk'
+  - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+    shell: bash
+    timeout-minutes: 15
+```
+
+
 [smalltalkCI]: https://github.com/hpi-swa/smalltalkCI
