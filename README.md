@@ -73,16 +73,16 @@ steps:
 ```
 
 
-### (Pharo Specific) Registering Repository in Iceberg (Github Action)
+### (Pharo and GithubAction specific) Registering Repository in Iceberg  
 
 Registering a repository in Iceberg allows developers to access the directory of the repository regardless of where it is located in the file system.  
 This ease access to non-smalltalk resources.  
+To register the repository in Iceberg you need to add the option #registerInIceberg : true in your .smalltalkci.ston file.  
 
 ```smalltalk
 (IceRepository registeredRepositoryIncludingPackage: self class package) location pathString
 ```
 
-To register the repository in Iceberg you need to add the option registerInIceberg in your .smalltalkci.ston file.  
 However, Iceberg requires the full commit history.  
 actions/checkout provides by default only the latest one.  
 Therefore we need to use an option to get all commits.  
