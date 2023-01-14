@@ -73,23 +73,24 @@ steps:
 ```
 
 
-### (Pharo Specific) Use Iceberg features in Github Action 
+### (Pharo Specific) Registering Repository in Iceberg (Github Action)
 
-Using Iceberg in github action allows developers to access the directory of a repository regardless of where it is located in the file system.  
+Registering a repository in Iceberg allows developers to access the directory of the repository regardless of where it is located in the file system.  
 This ease access to non-smalltalk resources.  
 
 ```smalltalk
 (IceRepository registeredRepositoryIncludingPackage: self class package) location pathString
 ```
 
-Iceberg requires the full commit history.  
+To register the repository in Iceberg you need to add the option registerInIceberg in your .smalltalkci.ston file.  
+However, Iceberg requires the full commit history.  
 actions/checkout provides by default only the latest one.  
 Therefore we need to use an option to get all commits.  
 (Only available for Pharo 9 and later version at this time). 
 
 ```yaml
 steps:
-  - uses: actions/checkout@v2
+  - uses: actions/checkout@v3
     with:
       fetch-depth: 0 #Option fetching all commits
   - uses: hpi-swa/setup-smalltalkCI@v1
