@@ -86,7 +86,7 @@ To register the repository in Iceberg, you need to add `#registerInIceberg : tru
 However, Iceberg requires the full commit history.
 `actions/checkout` provides by default only the latest one.
 Therefore we need to use an option to get all commits.
-(Only available for Pharo 9 and later version at this time). 
+(Only available for Pharo 7 and later version at this time). 
 
 ```yaml
 steps:
