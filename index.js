@@ -37,9 +37,10 @@ async function run() {
     const isEtoys = isPlatform(image, 'etoys')
     const isPharo = isPlatform(image, 'pharo')
     const isMoose = isPlatform(image, 'moose')
+    const isGToolkit = isPlatform(image, 'gtoolkit')
     const isGemstone = isPlatform(image, 'gemstone')
 
-    if (!isSqueak && !isEtoys && !isPharo && !isMoose && !isGemstone) {
+    if (!isSqueak && !isEtoys && !isPharo && !isMoose && !isGToolkit && !isGemstone) {
       return core.setFailed(`Unsupported Smalltalk version "${image}".`)
     }
 
@@ -70,7 +71,7 @@ async function run() {
       } else {
         if (isSqueak || isEtoys) {
           await install32bitDependencies(DEFAULT_32BIT_DEPS)
-        } else if (isPharo || isMoose) {
+        } else if (isPharo || isMoose || isGToolkit) {
           await install32bitDependencies(PHARO_32BIT_DEPS)
         } else if (isGemstone) {
           // nothing to, smalltalkCI will set up the system using GsDevKit_home
