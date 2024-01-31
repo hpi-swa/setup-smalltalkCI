@@ -11,7 +11,7 @@ const tc = require('@actions/tool-cache')
 const IS_LINUX = process.platform === 'linux'
 const IS_WINDOWS = process.platform === 'win32'
 
-const INSTALLATION_DIRECTORY = path.join(os.homedir(), '.smalltalkCI')
+const DEFAULT_WORKSPACE = os.homedir()
 const DEFAULT_BRANCH = 'master'
 const DEFAULT_SOURCE = 'hpi-swa/smalltalkCI'
 const LSB_FILE = '/etc/lsb-release'
@@ -47,20 +47,23 @@ async function run() {
     core.setOutput('smalltalk-image', image)
     core.setOutput('smalltalk-version', version)
 
+    const smalltalkCIWorkspace = core.getInput('smalltalkCI-workspace') || DEFAULT_WORKSPACE
     const smalltalkCIBranch = core.getInput('smalltalkCI-branch') || DEFAULT_BRANCH
     const smalltalkCISource = core.getInput('smalltalkCI-source') || DEFAULT_SOURCE
 
+    const installationDirectory = path.join(smalltalkCIWorkspace, '.smalltalkCI')
+    let tempDirectory = path.join(smalltalkCIWorkspace, '.smalltalkCI-temp')
+
     /* Download and extract smalltalkCI. */
     console.log('Downloading and extracting smalltalkCI...')
-    let tempDir = path.join(os.homedir(), '.smalltalkCI-temp')
     if (IS_WINDOWS) {
       const toolPath = await tc.downloadTool(`https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.zip`)
-      tempDir = await tc.extractZip(toolPath, tempDir)
+      tempDirectory = await tc.extractZip(toolPath, tempDirectory)
     } else {
       const toolPath = await tc.downloadTool(`https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.tar.gz`)
-      tempDir = await tc.extractTar(toolPath, tempDir)
+      tempDirectory = await tc.extractTar(toolPath, tempDirectory)
     }
-    await io.mv(path.join(tempDir, `smalltalkCI-${smalltalkCIBranch}`), INSTALLATION_DIRECTORY)
+    await io.mv(path.join(tempDirectory, `smalltalkCI-${smalltalkCIBranch}`), installationDirectory)
 
     /* Install dependencies if any. */
     if (IS_LINUX) {
@@ -80,16 +83,19 @@ async function run() {
     }
 
     /* Set up smalltalkci command. */
-    core.addPath(path.join(INSTALLATION_DIRECTORY, 'bin'))
+    core.addPath(path.join(installationDirectory, 'bin'))
 
+    let envList
     if (!IS_WINDOWS) {
       /* Find and export smalltalkCI's env vars. */
-      const envList = child_process.execSync('smalltalkci --print-env').toString()
-      for (const envItem of envList.split('\n')) {
-        const parts = envItem.split('=')
-        if (parts.length == 2) {
-          core.exportVariable(parts[0], parts[1])
-        }
+      envList = child_process.execSync('smalltalkci --print-env').toString()
+    } else {
+      envList = child_process.execSync('bash -l -c ".smalltalkCI/bin/smalltalkci --print-env"').toString()
+    }
+    for (const envItem of envList.split('\n')) {
+      const parts = envItem.split('=')
+      if (parts.length == 2) {
+        core.exportVariable(parts[0], parts[1])
       }
     }
   } catch (error) {
