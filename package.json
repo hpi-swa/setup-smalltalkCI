@@ -18,7 +18,7 @@
     "Smalltalk"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=24.0.0"
   },
   "author": "Software Architecture Group, Hasso Plattner Institute",
   "license": "MIT",
