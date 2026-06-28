@@ -1,11 +1,12 @@
 name: 'Setup smalltalkCI'
-description: 'Set up smalltalkCI for testing Squeak/Smalltalk, Pharo, GemStone,
-  and Moose projects'
+description:
+  'Set up smalltalkCI for testing Squeak/Smalltalk, Pharo, GemStone, and Moose
+  projects'
 author: 'Software Architecture Group, Hasso Plattner Institute'
 inputs:
   smalltalk-image:
-    description: 'Smalltalk image selection (see smalltalkCI''s list of
-      supported images)'
+    description:
+      "Smalltalk image selection (see smalltalkCI's list of supported images)"
   smalltalk-version:
     description: 'Deprecated, please use smalltalk-image'
   smalltalkCI-source:

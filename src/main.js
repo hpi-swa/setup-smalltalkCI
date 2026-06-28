@@ -1,12 +1,12 @@
-const child_process = require('child_process')
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
+import * as child_process from 'child_process'
+import * as fs from 'fs'
+import * as os from 'os'
+import * as path from 'path'
 
-const core = require('@actions/core')
-const exec = require('@actions/exec')
-const io = require('@actions/io')
-const tc = require('@actions/tool-cache')
+import * as core from '@actions/core'
+import * as exec from '@actions/exec'
+import * as io from '@actions/io'
+import * as tc from '@actions/tool-cache'
 
 const IS_LINUX = process.platform === 'linux'
 const IS_WINDOWS = process.platform === 'win32'
@@ -17,17 +17,18 @@ const DEFAULT_SOURCE = 'hpi-swa/smalltalkCI'
 const LSB_FILE = '/etc/lsb-release'
 const UBUNTU_VERSION = getUbuntuVersion()
 const DEFAULT_64BIT_DEPS = 'libpulse0'
-const DEFAULT_32BIT_DEPS = `libc6-i386 libuuid1:i386${UBUNTU_VERSION == 18 ? ' libssl1.0.0:i386' : (UBUNTU_VERSION == 20 ? ' libssl1.1:i386': '')}`
+const DEFAULT_32BIT_DEPS = `libc6-i386 libuuid1:i386${UBUNTU_VERSION == 18 ? ' libssl1.0.0:i386' : UBUNTU_VERSION == 20 ? ' libssl1.1:i386' : ''}`
 const PHARO_32BIT_DEPS = `${DEFAULT_32BIT_DEPS} libcairo2:i386`
 
-
-async function run() {
+export async function run() {
   try {
     let image
     const version = core.getInput('smalltalk-version')
     if (version.length > 0) {
       image = version
-      core.warning('Please use "smalltalk-image". "smalltalk-version" is deprecated and will be removed in the future.')
+      core.warning(
+        'Please use "smalltalk-image". "smalltalk-version" is deprecated and will be removed in the future.'
+      )
     } else {
       image = core.getInput('smalltalk-image', { required: true })
     }
@@ -40,27 +41,43 @@ async function run() {
     const isGToolkit = isPlatform(image, 'gtoolkit')
     const isGemstone = isPlatform(image, 'gemstone')
 
-    if (!isSqueak && !isEtoys && !isPharo && !isMoose && !isGToolkit && !isGemstone) {
+    if (
+      !isSqueak &&
+      !isEtoys &&
+      !isPharo &&
+      !isMoose &&
+      !isGToolkit &&
+      !isGemstone
+    ) {
       return core.setFailed(`Unsupported Smalltalk version "${image}".`)
     }
 
     core.setOutput('smalltalk-image', image)
     core.setOutput('smalltalk-version', version)
 
-    const smalltalkCIBranch = core.getInput('smalltalkCI-branch') || DEFAULT_BRANCH
-    const smalltalkCISource = core.getInput('smalltalkCI-source') || DEFAULT_SOURCE
+    const smalltalkCIBranch =
+      core.getInput('smalltalkCI-branch') || DEFAULT_BRANCH
+    const smalltalkCISource =
+      core.getInput('smalltalkCI-source') || DEFAULT_SOURCE
 
     /* Download and extract smalltalkCI. */
     console.log('Downloading and extracting smalltalkCI...')
     let tempDir = path.join(os.homedir(), '.smalltalkCI-temp')
     if (IS_WINDOWS) {
-      const toolPath = await tc.downloadTool(`https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.zip`)
+      const toolPath = await tc.downloadTool(
+        `https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.zip`
+      )
       tempDir = await tc.extractZip(toolPath, tempDir)
     } else {
-      const toolPath = await tc.downloadTool(`https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.tar.gz`)
+      const toolPath = await tc.downloadTool(
+        `https://github.com/${smalltalkCISource}/archive/${smalltalkCIBranch}.tar.gz`
+      )
       tempDir = await tc.extractTar(toolPath, tempDir)
     }
-    await io.mv(path.join(tempDir, `smalltalkCI-${smalltalkCIBranch}`), INSTALLATION_DIRECTORY)
+    await io.mv(
+      path.join(tempDir, `smalltalkCI-${smalltalkCIBranch}`),
+      INSTALLATION_DIRECTORY
+    )
 
     /* Install dependencies if any. */
     if (IS_LINUX) {
@@ -84,7 +101,9 @@ async function run() {
 
     if (!IS_WINDOWS) {
       /* Find and export smalltalkCI's env vars. */
-      const envList = child_process.execSync('smalltalkci --print-env').toString()
+      const envList = child_process
+        .execSync('smalltalkci --print-env')
+        .toString()
       for (const envItem of envList.split('\n')) {
         const parts = envItem.split('=')
         if (parts.length == 2) {
@@ -110,7 +129,7 @@ async function install32bitDependencies(deps) {
 
 function getUbuntuVersion() {
   if (IS_LINUX && fs.existsSync(LSB_FILE)) {
-    const contents = fs.readFileSync(LSB_FILE).toString();
+    const contents = fs.readFileSync(LSB_FILE).toString()
     if (contents.includes('DISTRIB_RELEASE=22')) {
       return 22
     } else if (contents.includes('DISTRIB_RELEASE=20')) {
@@ -128,6 +147,3 @@ function getUbuntuVersion() {
 function isPlatform(image, name) {
   return image.toLowerCase().startsWith(name)
 }
-
-// eslint-disable-next-line no-floating-promise/no-floating-promise
-run()  // return a Promise as specified by the GitHub Actions protocol
