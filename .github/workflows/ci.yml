@@ -6,17 +6,36 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        smalltalk: [Squeak64-trunk, Squeak32-4.5]
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        smalltalk: [Squeak64-trunk]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - smalltalk: 'Squeak32-4.5'
+            os: ubuntu-latest
+          - smalltalk: 'Squeak32-4.5'
+            os: windows-latest
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: ./
         with:
           smalltalk-image: ${{ matrix.smalltalk }}
-      - if: runner.os != 'Windows'
+      - run: smalltalkci --help
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          repository: 'hpi-swa/smalltalkCI'
+          path: 'smalltalkCI-checkout'
+      - name: smalltalkCI self test
+        if: runner.os != 'Windows'
         run: |
-          smalltalkci --help
           [[ ! -z "${SMALLTALK_CI_HOME}" ]] || ( echo "SMALLTALK_CI_HOME not set" && false )
-      - shell: bash
+          cd $GITHUB_WORKSPACE/smalltalkCI-checkout
+          smalltalkci -s ${{ matrix.smalltalk }} --self-test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: smalltalkCI self test
+        shell: bash
         if: runner.os == 'Windows'
-        run: smalltalkci --help
+        run: |
+          cd $GITHUB_WORKSPACE/smalltalkCI-checkout
+          smalltalkci -s ${{ matrix.smalltalk }} --self-test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
