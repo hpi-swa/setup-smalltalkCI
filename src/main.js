@@ -94,6 +94,7 @@ export async function run() {
               'squeak32-4.6',
               'squeak32-5.0',
               'squeak32-5.1',
+              'squeak32-5.2',
               'squeak32-5.3'
             ].includes(image.toLowerCase())
           ) {
