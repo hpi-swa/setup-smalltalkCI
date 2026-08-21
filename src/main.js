@@ -88,6 +88,17 @@ export async function run() {
       } else {
         if (isSqueak || isEtoys) {
           await install32bitDependencies(DEFAULT_32BIT_DEPS)
+          if (
+            [
+              'squeak32-4.5',
+              'squeak32-4.6',
+              'squeak32-5.0',
+              'squeak32-5.1',
+              'squeak32-5.3'
+            ].includes(image.toLowerCase())
+          ) {
+            await install32BitLibsslForSqueak()
+          }
         } else if (isPharo || isMoose || isGToolkit) {
           await install32bitDependencies(PHARO_32BIT_DEPS)
         } else if (isGemstone) {
@@ -125,6 +136,16 @@ async function install32bitDependencies(deps) {
   await exec.exec('sudo dpkg --add-architecture i386')
   await exec.exec('sudo apt-get update')
   await exec.exec(`sudo apt-get install -qq --no-install-recommends ${deps}`)
+}
+
+async function install32BitLibsslForSqueak() {
+  core.warning(
+    'OpenSSL 1.1.1 reached End of Life in September 2023 and no longer receives security patches. Please upgrade to a newer Squeak image.'
+  )
+  const libsslPath = await tc.downloadTool(
+    'http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_i386.deb'
+  )
+  await exec.exec(`sudo dpkg -i ${libsslPath}`)
 }
 
 function getUbuntuVersion() {
