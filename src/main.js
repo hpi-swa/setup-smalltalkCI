@@ -140,9 +140,6 @@ async function install32bitDependencies(deps) {
 }
 
 async function install32BitLibsslForSqueak() {
-  core.warning(
-    'OpenSSL 1.1.1 reached End of Life in September 2023 and no longer receives security patches. Please upgrade to a newer Squeak image.'
-  )
   const libsslPath = await tc.downloadTool(
     'http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_i386.deb'
   )
