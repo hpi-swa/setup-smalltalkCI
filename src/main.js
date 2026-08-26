@@ -17,7 +17,7 @@ const DEFAULT_SOURCE = 'hpi-swa/smalltalkCI'
 const LSB_FILE = '/etc/lsb-release'
 const UBUNTU_VERSION = getUbuntuVersion()
 const DEFAULT_64BIT_DEPS = 'libpulse0'
-const DEFAULT_32BIT_DEPS = `libc6-i386 libuuid1:i386${UBUNTU_VERSION == 18 ? ' libssl1.0.0:i386' : UBUNTU_VERSION == 20 ? ' libssl1.1:i386' : ''}`
+const DEFAULT_32BIT_DEPS = `libc6-i386 libgl1:i386 libpulse0:i386 libuuid1:i386 libxrender1:i386 zlib1g:i386${UBUNTU_VERSION == 18 ? ' libssl1.0.0:i386' : UBUNTU_VERSION == 20 ? ' libssl1.1:i386' : ''}`
 const PHARO_32BIT_DEPS = `${DEFAULT_32BIT_DEPS} libcairo2:i386`
 
 export async function run() {
